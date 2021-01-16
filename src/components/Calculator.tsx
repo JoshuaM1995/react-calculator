@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { AppTheme } from '../App';
 
@@ -9,53 +9,57 @@ type CalculatorProps = {
 };
 
 const Calculator = ({ theme, setTheme }: CalculatorProps) => {
-  const [calculationBefore, setCalculationBefore] = useState('');
-  const [calculation, setCalculation] = useState('0');
-  const [calculationAfter, setCalculationAfter] = useState('');
+  const [numberBefore, setNumberBefore] = useState('');
+  const [currentNumber, setCurrentNumber] = useState('0');
+  const [numberAfter, setNumberAfter] = useState('');
   const [action, setAction] = useState('');
+
+  const getCalculatedResult = (value: number, previousCalculation: number) => {
+    switch (action) {
+      case '/':
+        return (parseFloat(numberBefore) / parseFloat(currentNumber)).toString();
+      case 'x':
+        return (parseFloat(numberBefore) * parseFloat(currentNumber)).toString();
+      case '-':
+        return (parseFloat(numberBefore) - parseFloat(currentNumber)).toString();
+      case '+':
+        return (parseFloat(numberBefore) + parseFloat(currentNumber)).toString();
+      case '%':
+        return (parseFloat(numberBefore) % parseFloat(currentNumber)).toString();
+      default:
+        return previousCalculation.toString();
+    }
+  };
 
   const handleClick = ({ target: { innerHTML: value } }: any) => {
     const parsedValue = parseFloat(value);
 
     if (!Number.isNaN(parsedValue) || value === '.') {
-      setCalculation((previousCalculation) => (previousCalculation === '0' ? value : `${previousCalculation}${value}`));
+      setCurrentNumber(
+        (previousCalculation) => (previousCalculation === '0' ? value : `${previousCalculation}${value}`),
+      );
     } else {
       switch (value) {
         case 'AC':
-          setCalculation('0');
-          setCalculationBefore('');
-          setCalculationAfter('');
+          setCurrentNumber('0');
+          setNumberBefore('');
+          setNumberAfter('');
           setAction('');
           break;
         case '=':
-          setCalculationAfter(() => calculation);
-          setCalculation((previousCalculation) => {
-            switch (action) {
-              case '/':
-                return (parseFloat(calculationBefore) / parseFloat(calculation)).toString();
-              case 'x':
-                return (parseFloat(calculationBefore) * parseFloat(calculation)).toString();
-              case '-':
-                return (parseFloat(calculationBefore) - parseFloat(calculation)).toString();
-              case '+':
-                return (parseFloat(calculationBefore) + parseFloat(calculation)).toString();
-              case '%':
-                return (parseFloat(calculationBefore) % parseFloat(calculation)).toString();
-              default:
-                return previousCalculation;
-            }
-          });
+          setNumberAfter(() => currentNumber);
+          setCurrentNumber((previousNumber) => getCalculatedResult(value, parseFloat(previousNumber)));
           break;
         default:
           if (action !== '') {
             setAction(value);
-            setCalculationBefore(calculation);
-            setCalculationAfter('');
-            setCalculation('');
+            setNumberBefore(currentNumber);
+            setNumberAfter('');
+            setCurrentNumber('');
           } else {
             setAction(value);
-            setCalculationBefore(calculation);
-            setCalculation('');
+            setNumberBefore(currentNumber);
+            setCurrentNumber('');
           }
       }
     }
@@ -79,11 +83,11 @@ const Calculator = ({ theme, setTheme }: CalculatorProps) => {
 
           <div className="header-display">
             <div className="history">
-              {calculationBefore}
+              {numberBefore}
               <span>{action}</span>
-              {calculationAfter}
+              {numberAfter}
             </div>
-            <div className="calculation">{calculation ? parseFloat(calculation) : ''}</div>
+            <div className="calculation">{currentNumber}</div>
           </div>
         </div>
         <div className="calculator-body">
