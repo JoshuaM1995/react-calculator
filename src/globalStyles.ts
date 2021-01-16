@@ -24,7 +24,7 @@ export const GlobalStyles = createGlobalStyle`
       background: ${({ theme }: any) => theme.background};
       border-radius: 15px;
 
-      .header {
+      .calculator-header {
         height: 300px;
         
         .theme-toggle-container {
@@ -68,16 +68,38 @@ export const GlobalStyles = createGlobalStyle`
           }
           
           .calculation {
+            height: 40px;
             font-size: 40px;
             font-weight: bold;
           }
         }
       }
 
-      .body {
+      .calculator-body {
         background: ${({ theme }: any) => theme.bodyBackground};
         height: 400px;
+        padding: 20px;
         border-radius: 40px 40px 15px 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 10px;
+        
+        .calculator-button {
+          all: unset;
+          background: ${({ theme }: any) => theme.buttonBackground};
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          
+          &.modifier { color: ${({ theme }: any) => theme.textSecondary}; }
+          &.action { color: ${({ theme }: any) => theme.textTertiary}; }
+          
+          &:hover {
+            background: ${({ theme }: any) => theme.buttonBackgroundHover};
+          }
+        }
       }
       
       &.calculator-dark {
